@@ -51,9 +51,9 @@ def fix_slabs(f):
     """
     replace slab text: Ξ +8 -> Ξ 8
     """
-    # To dxf Ο„ΞΏΟ… FESPA Ο€ΟΟΟ„Ξ± Ξ³ΟΞ¬Ο†ΞµΞΉ Ο„ΞΏΞ½ Ξ±ΟΞΉΞΈΞΌΟ Ο„Ξ·Ο‚ Ο€Ξ»Ξ¬ΞΊΞ±Ο‚ ΞΊΞ±ΞΉ ΞΌΞµΟ„Ξ¬ Ο„ΞΏ prefix. Ξ“ΞΉΞ± Ξ±Ο…Ο„Ο ΞΊΞ±ΞΉ Ο‡ΟΞ·ΟƒΞΉΞΌΞΏΟ€ΞΏΞΉΟ 
-    # Ο‰Ο‚ arguments Ο„ΞΏΟ… i Ο„Ξ± 11-20, Ξ±Ξ½Ο„Ξ― Ξ³ΞΉΞ± Ο„Ξ± 1-10.
-    # Ξ•Ο€Ξ―ΟƒΞ·Ο‚ Ξ­Ο‡Ο‰ Ξ±Ξ½Ο„ΞΉΟƒΟ„ΟΞ­ΟΞµΞΉ ΞΊΞ±ΞΉ Ο„Ξ· ΟƒΞµΞΉΟΞ¬ ΟƒΟ„ΞΏ text (i[19]+i[9])
+    # To dxf του FESPA πρώτα γράφει τον αριθμό της πλάκας και μετά το prefix. Για αυτό και χρησιμοποιώ 
+    # ως arguments του i τα 11-20, αντί για τα 1-10.
+    # Επίσης έχω αντιστρέψει και τη σειρά στο text (i[19]+i[9])
     s1=get_MTEXT_short('slab_name')
     s2=get_MTEXT_short('slab_prefix_name')
     pat=re.compile('('+s1+s2+')')
@@ -95,7 +95,6 @@ def fix_slabs2(f):
         f=f.replace(old,new)
         print "replacing : "+text
     return f
-
 def fix_beams(f):
     """
     replace beam text: Ξ”+9+30/60 -> Ξ”9 30/60
@@ -155,28 +154,34 @@ def fix_columns(f):
         print "replacing : "+text
     return f
 
+
 if __name__ == "__main__":
-    # input
-    ifilename=raw_input('input  : ')
-    try:
-            ifile=open(ifilename,'r')
-    except:
-            raise 'cannot open file'
-    f=ifile.read()
-    ifile.close()
-    
-    # fixes
-    f=fix_beams(f)
-    f=fix_columns(f)
-    f=fix_slabs(f)
-    f=fix_slabs2(f)
-    
-    # output
-    try:
-            ofilename=raw_input('output : ')
-    except:
-            raise 'cannot open file'	
-    ofile=open(ofilename,'w')
-    ofile.write(f)
-    ofile.close()
-    raw_input('press <enter> to exit...')
+	# input
+	ifilename=raw_input('input  : ')
+	try:
+		ifile=open(ifilename,'r')
+	except:
+		raise 'cannot open file'
+	f=ifile.read()
+	ifile.close()
+	
+	# replaces
+	f=f.replace('Φ','%%C')
+	
+	# fixes
+	f=fix_beams(f)
+	f=fix_columns(f)
+	f=fix_slabs(f)
+	f=fix_slabs2(f)	
+	
+	# output
+	ofilename=raw_input('output : ')
+	try:
+		ofile=open(ofilename,'w')
+	except:
+		raise 'cannot open file'
+	
+	
+	ofile.write(f)
+	ofile.close()
+	raw_input('press <enter> to exit...')
