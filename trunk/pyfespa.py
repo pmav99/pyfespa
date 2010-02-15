@@ -51,9 +51,6 @@ def fix_slabs(f):
     """
     replace slab text: Ξ +8 -> Ξ 8
     """
-    # To dxf του FESPA πρώτα γράφει τον αριθμό της πλάκας και μετά το prefix. Για αυτό και χρησιμοποιώ 
-    # ως arguments του i τα 11-20, αντί για τα 1-10.
-    # Επίσης έχω αντιστρέψει και τη σειρά στο text (i[19]+i[9])
     s1=get_MTEXT_short('slab_name')
     s2=get_MTEXT_short('slab_prefix_name')
     pat=re.compile('('+s1+s2+')')
@@ -140,18 +137,6 @@ def fix_columns(f):
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
         print "replacing : "+text        
-        handle   = i[1]
-        x0       = i[3]
-        y0       = i[4]
-        h        = i[5]
-        w        = 1.5
-        text     = i[9]+i[19]
-        layer    = 'column_name_beton'
-        angle    = i[10]
-        old=i[0]
-        new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
-        f=f.replace(old,new)
-        print "replacing : "+text
     return f
 
 
@@ -164,9 +149,6 @@ if __name__ == "__main__":
 		raise 'cannot open file'
 	f=ifile.read()
 	ifile.close()
-	
-	# replaces
-	f=f.replace('Φ','%%C')
 	
 	# fixes
 	f=fix_beams(f)
