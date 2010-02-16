@@ -42,7 +42,10 @@ def get_MTEXT(c5,c8,c10,c20,c40,c41,c71,c72,c1,c7,c50,newlines):
             s=s.replace(r'\n','\n').strip()+'\n'
     return s
     
-def get_MTEXT_short(layer):
+def get_MTEXT_regex(layer):
+    """
+    
+    """
     c=r'(.*)'
     s=get_MTEXT(c,c,c,c,c,c,c,c,r'\{\\f\|b0\|i0\;(.*)\}',layer,c,False)
     return s
@@ -51,8 +54,8 @@ def fix_slabs(f):
     """
     replace slab text: Π+8 -> Π8
     """
-    s1=get_MTEXT_short('slab_name')
-    s2=get_MTEXT_short('slab_prefix_name')
+    s1=get_MTEXT_regex('slab_name')
+    s2=get_MTEXT_regex('slab_prefix_name')
     pat=re.compile('('+s1+s2+')')
     matches=pat.findall(f)
     for i in matches:
@@ -74,8 +77,8 @@ def fix_slabs2(f):
     """
     replace slab text: h= + 15 -> h=15
     """
-    s1=get_MTEXT_short('slab_name')
-    s2=get_MTEXT_short('slab_name')
+    s1=get_MTEXT_regex('slab_name')
+    s2=get_MTEXT_regex('slab_name')
     pat=re.compile('('+s1+s2+')')
     matches=pat.findall(f)
     for i in matches:
@@ -96,9 +99,9 @@ def fix_beams(f):
     """
     replace beam text: Δ+9+30/60 -> Δ9 30/60
     """
-    s1=get_MTEXT_short('beam_prefix_name_beton')
-    s2=get_MTEXT_short('beam_name_beton_upperstruct')
-    s3=get_MTEXT_short('beam_name_beton_upperstruct')
+    s1=get_MTEXT_regex('beam_prefix_name_beton')
+    s2=get_MTEXT_regex('beam_name_beton_upperstruct')
+    s3=get_MTEXT_regex('beam_name_beton_upperstruct')
     pat=re.compile('('+s1+s2+s3+')')
     matches=pat.findall(f)
     for i in matches:
@@ -120,8 +123,8 @@ def fix_columns(f):
     """
     replace column text: K+8 -> K8
     """
-    s1=get_MTEXT_short('column_prefix_name_beton')
-    s2=get_MTEXT_short('column_name_beton')
+    s1=get_MTEXT_regex('column_prefix_name_beton')
+    s2=get_MTEXT_regex('column_name_beton')
     pat=re.compile('('+s1+s2+')')
     matches=pat.findall(f)
     for i in matches:
@@ -136,34 +139,35 @@ def fix_columns(f):
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
-        print "replacing : "+text        
+        print "replacing : "+text
     return f
 
 
 if __name__ == "__main__":
-	# input
-	ifilename=raw_input('input  : ')
-	try:
-		ifile=open(ifilename,'r')
-	except:
-		raise 'cannot open file'
-	f=ifile.read()
-	ifile.close()
-	
-	# fixes
-	f=fix_beams(f)
-	f=fix_columns(f)
-	f=fix_slabs(f)
-	f=fix_slabs2(f)	
-	
-	# output
-	ofilename=raw_input('output : ')
-	try:
-		ofile=open(ofilename,'w')
-	except:
-		raise 'cannot open file'
-	
-	
-	ofile.write(f)
-	ofile.close()
-	raw_input('press <enter> to exit...')
+    # input
+    ifilename=raw_input('input  : ')
+    try:
+        ifile=open(ifilename,'r')
+    except:
+        raise 'cannot open file'
+    f=ifile.read()
+    ifile.close()
+
+    # fixes
+    f=fix_beams(f)
+    f=fix_columns(f)
+    f=fix_slabs(f)
+    f=fix_slabs2(f)	
+    
+    # replace
+    f=f.replace('Φ'.decode('utf-8').encode('windows-1253'),'%%C')
+
+    # output
+    ofilename=raw_input('output : ')
+    try:
+        ofile=open(ofilename,'w')
+    except:
+        raise 'cannot open file'
+    ofile.write(f)
+    ofile.close()
+    raw_input('press <enter> to exit...')
