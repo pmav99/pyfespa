@@ -44,7 +44,8 @@ def get_MTEXT(c5,c8,c10,c20,c40,c41,c71,c72,c1,c7,c50,newlines):
     
 def get_MTEXT_regex(layer):
     """
-    
+    Δημιουργεί ένα regex το οποίο ταιριάζει με MTEXT's που ανήκουν
+    σε ένα δεδομένο layer.
     """
     c=r'(.*)'
     s=get_MTEXT(c,c,c,c,c,c,c,c,r'\{\\f\|b0\|i0\;(.*)\}',layer,c,False)
