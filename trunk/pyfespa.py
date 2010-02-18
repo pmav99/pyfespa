@@ -31,6 +31,7 @@
 # i[9]  = Text string
 # i[10] = Rotation Angle
 
+from __future__ import print_function
 import re
 
 def get_MTEXT(c5,c8,c10,c20,c40,c41,c71,c72,c1,c7,c50,newlines):
@@ -70,7 +71,7 @@ def fix_slabs(f, prefix_layer, element_layer):
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
-        print "replacing : "+text
+        print ("replacing : ",text)
     return f
 
 def fix_slabs2(f,element_layer):
@@ -93,7 +94,7 @@ def fix_slabs2(f,element_layer):
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
-        print "replacing : "+text
+        print ("replacing : ",text)
     return f
 def fix_beams(f, prefix_layer, element_layer):
     """
@@ -116,7 +117,7 @@ def fix_beams(f, prefix_layer, element_layer):
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
-        print "replacing : "+text
+        print ("replacing : ",text)
     return f
 
 def fix_columns(f, prefix_layer, element_layer):
@@ -139,11 +140,21 @@ def fix_columns(f, prefix_layer, element_layer):
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
-        print "replacing : "+text        
+        print ("replacing : ",text)      
     return f
 
 if __name__ == "__main__":
     # input
+    s = u"""
+Το πρόγραμμα αυτό επεξεργάζεται τα αρχεία dxf που παράγονται από το FESPΑ.\n
+Στην εισαγωγή τόσο του αρχείου εισόδου όσο και του αρχείου εξόδου είναι 
+απαραίτητο να γράφετε και την επέκταση (extension) του αρχείου. 
+Π.χ. "filename.dxf".
+    """
+    
+    print(s)            # Printing welcoming string
+    
+    #Opening reading and closing input file
     ifilename=raw_input('input  : ')
     try:
         ifile=open(ifilename,'r')
@@ -152,7 +163,7 @@ if __name__ == "__main__":
     f=ifile.read()
     ifile.close()
 
-    # fixes
+    # merging the layers
     f=fix_beams(f, 'beam_prefix_name_beton', 'beam_name_beton_upperstruct')
     f=fix_beams(f, 'beam_prefix_name_beton', 'beam_name_beton_found_shear_wal')
     f=fix_beams(f, 'beam_prefix_name_beton', 'beam_name_beton_foundation')
@@ -160,10 +171,10 @@ if __name__ == "__main__":
     f=fix_slabs(f, 'slab_prefix_name', 'slab_name')
     f=fix_slabs2(f, 'slab_name')	
     
-    # replace
+    # replace the letter Φ with the diameter sign
     f=f.replace('Φ'.decode('utf-8').encode('windows-1253'),'%%C')
 
-    # output
+    # opening, writing and closing output file
     ofilename=raw_input('output : ')
     try:
         ofile=open(ofilename,'w')
