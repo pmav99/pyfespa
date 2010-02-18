@@ -33,6 +33,7 @@
 
 from __future__ import print_function
 import re
+import os
 
 def get_MTEXT(c5,c8,c10,c20,c40,c41,c71,c72,c1,c7,c50,newlines):
     """
@@ -144,18 +145,22 @@ def fix_columns(f, prefix_layer, element_layer):
     return f
 
 if __name__ == "__main__":
-    # input
     s = u"""
-Το πρόγραμμα αυτό επεξεργάζεται τα αρχεία dxf που παράγονται από το FESPΑ.\n
-Στην εισαγωγή τόσο του αρχείου εισόδου όσο και του αρχείου εξόδου είναι 
-απαραίτητο να γράφετε και την επέκταση (extension) του αρχείου. 
-Π.χ. "filename.dxf".
+----------------------------------------------------------------------------
+|Το πρόγραμμα αυτό επεξεργάζεται τα αρχεία dxf που παράγονται από το FESPΑ.|
+|                                                                          |
+|Στην εισαγωγή του αρχείου εισόδου ΔΕΝ πρέπει να γράφετε η επέκταση        |
+|(extension) του αρχείου. Π.χ. "filename" και όχι "filename.dxf".          |
+|                                                                          |
+|Το όνομα του αρχείου εξόδου είναι ίδιο με αυτό του αρχείου εισόδου, με την|
+|προσθήκη του "_FIXED" στο τέλος του ονόματος.                             |
+----------------------------------------------------------------------------
     """
-    
     print(s)            # Printing welcoming string
     
     #Opening reading and closing input file
-    ifilename=raw_input('input  : ')
+    base_name=raw_input('Name of the file  : ') 
+    ifilename=base_name + ".dxf"
     try:
         ifile=open(ifilename,'r')
     except:
@@ -175,7 +180,7 @@ if __name__ == "__main__":
     f=f.replace('Φ'.decode('utf-8').encode('windows-1253'),'%%C')
 
     # opening, writing and closing output file
-    ofilename=raw_input('output : ')
+    ofilename=base_name+"_FIXED.dxf"
     try:
         ofile=open(ofilename,'w')
     except:
