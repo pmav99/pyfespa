@@ -50,13 +50,12 @@ def get_MTEXT_regex(layer):
     c=r'(.*)'
     s=get_MTEXT(c,c,c,c,c,c,c,c,r'\{\\f\|b0\|i0\;(.*)\}',layer,c,False)
     return s
-
-def fix_slabs(f):
+def fix_slabs(f, prefix_layer, element_layer):
     """
     replace slab text: Π+8 -> Π8
     """
-    s1=get_MTEXT_regex('slab_name')
-    s2=get_MTEXT_regex('slab_prefix_name')
+    s1=get_MTEXT_regex(element_layer)
+    s2=get_MTEXT_regex(prefix_layer)
     pat=re.compile('('+s1+s2+')')
     matches=pat.findall(f)
     for i in matches:
@@ -66,7 +65,7 @@ def fix_slabs(f):
         h        = i[15]
         w        = 1.5
         text     = i[19]+i[9]   
-        layer    = 'slab_name'
+        layer    = element_layer
         angle    = i[10]
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
@@ -74,12 +73,12 @@ def fix_slabs(f):
         print "replacing : "+text
     return f
 
-def fix_slabs2(f):
+def fix_slabs2(f,element_layer):
     """
     replace slab text: h= + 15 -> h=15
     """
-    s1=get_MTEXT_regex('slab_name')
-    s2=get_MTEXT_regex('slab_name')
+    s1=get_MTEXT_regex(element_layer)
+    s2=get_MTEXT_regex(element_layer)
     pat=re.compile('('+s1+s2+')')
     matches=pat.findall(f)
     for i in matches:
@@ -89,20 +88,20 @@ def fix_slabs2(f):
         h        = i[5]
         w        = 1.5
         text     = i[9]+i[19]
-        layer    = 'slab_name'
+        layer    = element_layer
         angle    = i[10]
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
         print "replacing : "+text
     return f
-def fix_beams(f):
+def fix_beams(f, prefix_layer, element_layer):
     """
     replace beam text: Δ+9+30/60 -> Δ9 30/60
     """
-    s1=get_MTEXT_regex('beam_prefix_name_beton')
-    s2=get_MTEXT_regex('beam_name_beton_upperstruct')
-    s3=get_MTEXT_regex('beam_name_beton_upperstruct')
+    s1=get_MTEXT_regex(prefix_layer)
+    s2=get_MTEXT_regex(element_layer)
+    s3=get_MTEXT_regex(element_layer)
     pat=re.compile('('+s1+s2+s3+')')
     matches=pat.findall(f)
     for i in matches:
@@ -110,9 +109,9 @@ def fix_beams(f):
         x0       = i[3]
         y0       = i[4]
         h        = i[5]
-        w        = 1.5
+        w        = 2.5
         text     = i[9]+i[19]+' '+i[29].strip()
-        layer    = 'beam_name_beton_upperstruct'
+        layer    = element_layer
         angle    = i[10]
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
@@ -120,12 +119,12 @@ def fix_beams(f):
         print "replacing : "+text
     return f
 
-def fix_columns(f):
+def fix_columns(f, prefix_layer, element_layer):
     """
     replace column text: K+8 -> K8
     """
-    s1=get_MTEXT_regex('column_prefix_name_beton')
-    s2=get_MTEXT_regex('column_name_beton')
+    s1=get_MTEXT_regex(prefix_layer)
+    s2=get_MTEXT_regex(element_layer)
     pat=re.compile('('+s1+s2+')')
     matches=pat.findall(f)
     for i in matches:
@@ -135,14 +134,13 @@ def fix_columns(f):
         h        = i[5]
         w        = 1.5
         text     = i[9]+i[19]
-        layer    = 'column_name_beton'
+        layer    = element_layer
         angle    = i[10]
         old=i[0]
         new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
         f=f.replace(old,new)
-        print "replacing : "+text
+        print "replacing : "+text        
     return f
-
 
 if __name__ == "__main__":
     # input
@@ -155,10 +153,12 @@ if __name__ == "__main__":
     ifile.close()
 
     # fixes
-    f=fix_beams(f)
-    f=fix_columns(f)
-    f=fix_slabs(f)
-    f=fix_slabs2(f)	
+    f=fix_beams(f, 'beam_prefix_name_beton', 'beam_name_beton_upperstruct')
+    f=fix_beams(f, 'beam_prefix_name_beton', 'beam_name_beton_found_shear_wal')
+    f=fix_beams(f, 'beam_prefix_name_beton', 'beam_name_beton_foundation')
+    f=fix_columns(f, 'column_prefix_name_beton', 'column_name_beton')
+    f=fix_slabs(f, 'slab_prefix_name', 'slab_name')
+    f=fix_slabs2(f, 'slab_name')	
     
     # replace
     f=f.replace('Φ'.decode('utf-8').encode('windows-1253'),'%%C')
