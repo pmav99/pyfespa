@@ -32,8 +32,14 @@
 # i[10] = Rotation Angle
 
 from __future__ import print_function
+
 import re
 import os
+
+# python3 compatibility
+import sys
+if sys.version_info.major >= 3:
+    raw_input = input
 
 def get_MTEXT(c5, c8, c10, c20, c40, c41, c71, c72, c1, c7, c50, newlines):
     """
