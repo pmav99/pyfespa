@@ -35,23 +35,25 @@ from __future__ import print_function
 import re
 import os
 
-def get_MTEXT(c5,c8,c10,c20,c40,c41,c71,c72,c1,c7,c50,newlines):
+def get_MTEXT(c5, c8, c10, c20, c40, c41, c71, c72, c1, c7, c50, newlines):
     """
     create MTEXT string
     """
-    s=r'0\nMTEXT\n5\n%s\n100\nAcDbEntity\n8\n%s\n100\nAcDbMText\n10\n%s\n20\n%s\n40\n%s\n41\n%s\n71\n%s\n72\n%s\n1\n%s\n7\n%s\n50\n%s\n'%(c5,c8,c10,c20,c40,c41,c71,c72,c1,c7,c50)
+    s = r'0\nMTEXT\n5\n%s\n100\nAcDbEntity\n8\n%s\n100\nAcDbMText\n10\n%s\n20\n%s\n40\n%s\n41\n%s\n71\n%s\n72\n%s\n1\n%s\n7\n%s\n50\n%s\n' % \
+            (c5, c8, c10, c20, c40, c41, c71, c72, c1, c7, c50)
     if newlines:
         s=s.replace(r'\n','\n').strip()+'\n'
     return s
-    
+
 def get_MTEXT_regex(layer):
     """
     Δημιουργεί ένα regex το οποίο ταιριάζει με MTEXT's που ανήκουν
     σε ένα δεδομένο layer.
     """
     c=r'(.*)'
-    s=get_MTEXT(c,c,c,c,c,c,c,c,r'\{\\f\|b0\|i0\;(.*)\}',layer,c,False)
+    s=get_MTEXT(c, c, c, c, c, c, c, c, r'\{\\f\|b0\|i0\;(.*)\}', layer, c, False)
     return s
+
 def fix_slabs(f, prefix_layer, element_layer):
     """
     replace slab text: Π+8 -> Π8
@@ -66,16 +68,16 @@ def fix_slabs(f, prefix_layer, element_layer):
         y0       = i[14]
         h        = i[15]
         w        = 1.5
-        text     = i[19]+i[9]   
+        text     = i[19] + i[9]
         layer    = element_layer
         angle    = i[10]
         old=i[0]
-        new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
-        f=f.replace(old,new)
-        #print ("replacing : ",text)
+        new=get_MTEXT(handle, layer, x0, y0, h, w, 1, 1, text, layer, angle, True)
+        f=f.replace(old, new)
+        #print ("replacing : ", text)
     return f
 
-def fix_slabs2(f,element_layer):
+def fix_slabs2(f, element_layer):
     """
     replace slab text: h= + 15 -> h=15
     """
@@ -93,10 +95,11 @@ def fix_slabs2(f,element_layer):
         layer    = element_layer
         angle    = i[10]
         old=i[0]
-        new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
-        f=f.replace(old,new)
-        #print ("replacing : ",text)
+        new=get_MTEXT(handle, layer, x0, y0, h, w, 1, 1, text, layer, angle, True)
+        f=f.replace(old, new)
+        #print ("replacing : ", text)
     return f
+
 def fix_beams(f, prefix_layer, element_layer):
     """
     replace beam text: Δ+9+30/60 -> Δ9 30/60
@@ -112,13 +115,13 @@ def fix_beams(f, prefix_layer, element_layer):
         y0       = i[4]
         h        = i[5]
         w        = 2.5
-        text     = i[9]+i[19]+' '+i[29].strip()
+        text     = i[9] + i[19] + ' ' + i[29].strip()
         layer    = element_layer
         angle    = i[10]
         old=i[0]
-        new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
-        f=f.replace(old,new)
-        #print ("replacing : ",text)
+        new=get_MTEXT(handle, layer, x0, y0, h, w, 1, 1, text, layer, angle, True)
+        f=f.replace(old, new)
+        #print ("replacing : ", text)
     return f
 
 def fix_columns(f, prefix_layer, element_layer):
@@ -135,13 +138,13 @@ def fix_columns(f, prefix_layer, element_layer):
         y0       = i[4]
         h        = i[5]
         w        = 1.5
-        text     = i[9]+i[19]
+        text     = i[9] + i[19]
         layer    = element_layer
         angle    = i[10]
         old=i[0]
-        new=get_MTEXT(handle,layer,x0,y0,h,w,1,1,text,layer,angle,True)
-        f=f.replace(old,new)
-        #print ("replacing : ",text)      
+        new=get_MTEXT(handle, layer, x0, y0, h, w, 1, 1, text, layer, angle, True)
+        f=f.replace(old, new)
+        #print ("replacing : ", text)
     return f
 
 def fixing(f):
@@ -154,11 +157,11 @@ def fixing(f):
     f=fix_beams(f, 'beam_prefix_name_beton', 'beam_name_beton_foundation')
     f=fix_columns(f, 'column_prefix_name_beton', 'column_name_beton')
     f=fix_slabs(f, 'slab_prefix_name', 'slab_name')
-    f=fix_slabs2(f, 'slab_name')	
-    
+    f=fix_slabs2(f, 'slab_name')
+
     # replace the letter Φ with the diameter sign
-    f=f.replace('Φ'.decode('utf-8').encode('windows-1253'),'%%C')
-    
+    f=f.replace('Φ'.decode('utf-8').encode('windows-1253'), '%%C')
+
     return f
 
 if __name__ == "__main__":
@@ -177,7 +180,7 @@ if __name__ == "__main__":
 ----------------------------------------------------------------------------
     """
     print(s)            # Printing welcoming string
-    
+
     # Getting the path of the current directory
     path = os.path.abspath('')
 
@@ -191,7 +194,7 @@ if __name__ == "__main__":
         if file.startswith(base_name) and file.endswith(".dxf"):
             #Opening reading and closing input file
             try:
-                ifile=open(file,'r')
+                ifile=open(file, 'r')
             except:
                 raise 'cannot open file'
             f=ifile.read()
@@ -201,17 +204,17 @@ if __name__ == "__main__":
             f=fixing(f)
 
             #setting the output file name
-            ofilename=file.replace(".dxf","_FIXED.dxf")
+            ofilename=file.replace(".dxf", "_FIXED.dxf")
 
             # opening, writing and closing output file
             try:
-                ofile=open(ofilename,'w')
+                ofile=open(ofilename, 'w')
             except:
                 raise 'cannot open file'
             ofile.write(f)
             ofile.close()
 
-            print("The new file is : ",ofilename)
+            print("The new file is : ", ofilename)
         else:
-            print("The file is not a dxf, or it doesn't start with the specified name.")          
+            print("The file is not a dxf, or it doesn't start with the specified name.")
     raw_input('press <enter> to exit...')
